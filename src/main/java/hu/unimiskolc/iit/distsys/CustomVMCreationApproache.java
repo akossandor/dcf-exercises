@@ -10,6 +10,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.IaaSService;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.VirtualMachine;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.ResourceAllocation;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.VMManager.VMManagementException;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.constraints.ConstantConstraints;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.constraints.ResourceConstraints;
@@ -50,15 +51,16 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 	public void directVMCreation() throws Exception {
 		PhysicalMachine pm = ExercisesBase.getNewPhysicalMachine();
 		if (!pm.isRunning()) {
-			VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm.localDisk.getMaxStorageCapacity());
+			VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm.localDisk.getMaxStorageCapacity() / 5);
 			pm.localDisk.registerObject(va);
 			
 			pm.turnon();
 			Timed.simulateUntilLastEvent();
-		}
 		
-		VirtualMachine[] vms = requestVMs(pm, smallConstraints, null, 2);
-	 	//IaaSService service = ExercisesBase.getNewIaaSService();
+		
+			VirtualMachine[] vms = requestVMs(pm, smallConstraints, null, 2);
+			Timed.simulateUntilLastEvent();
+		}
 	}
 
 	@Override
