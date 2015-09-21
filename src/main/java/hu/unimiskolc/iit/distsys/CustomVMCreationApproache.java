@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.junit.Assert;
+
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.IaaSService;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
@@ -65,7 +67,32 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 
 	@Override
 	public void twoPhaseVMCreation() throws Exception {
-		
+		PhysicalMachine pm = ExercisesBase.getNewPhysicalMachine();
+		if (!pm.isRunning()) {
+			VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm.localDisk.getMaxStorageCapacity() / 5);
+			pm.localDisk.registerObject(va);
+			
+			pm.turnon();
+			Timed.simulateUntilLastEvent();
+			
+			VirtualMachine virtualMachine1 = new VirtualMachine(va == null ? (VirtualAppliance) pm.localDisk
+					.contents().iterator().next() : va);
+			
+			ResourceAllocation resourceAllocation1 = pm.allocateResources(smallConstraints, true,
+					PhysicalMachine.defaultAllocLen);
+			
+			pm.deployVM(virtualMachine1, resourceAllocation1, pm.localDisk);
+			Timed.simulateUntilLastEvent();
+			
+			VirtualMachine virtualMachine2 = new VirtualMachine(va == null ? (VirtualAppliance) pm.localDisk
+					.contents().iterator().next() : va);
+			
+			ResourceAllocation resourceAllocation2 = pm.allocateResources(smallConstraints, true,
+					PhysicalMachine.defaultAllocLen);
+			
+			pm.deployVM(virtualMachine2, resourceAllocation2, pm.localDisk);
+			Timed.simulateUntilLastEvent();
+		}
 	}
 
 	@Override
