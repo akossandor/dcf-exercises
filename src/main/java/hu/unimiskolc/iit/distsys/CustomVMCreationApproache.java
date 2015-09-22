@@ -97,12 +97,52 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 
 	@Override
 	public void indirectVMCreation() throws Exception {
+		IaaSService iaasService = ExercisesBase.getNewIaaSService();
+		PhysicalMachine pm = ExercisesBase.getNewPhysicalMachine();
+		VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm.localDisk.getMaxStorageCapacity() / 5);
+		if (!pm.isRunning()) {
+			pm.localDisk.registerObject(va);
+			
+			pm.turnon();
+			Timed.simulateUntilLastEvent();
+		}
 		
+		iaasService.registerHost(pm);
+		iaasService.registerRepository(pm.localDisk);
+		
+		iaasService.requestVM((VirtualAppliance) iaasService.repositories.get(0).contents().iterator().next(),
+				iaasService.getCapacities(), iaasService.repositories.get(0), 1);
+		Timed.simulateUntilLastEvent();
 	}
 
 	@Override
 	public void migratedVMCreation() throws Exception {
+		VirtualMachine[] vms = null;
+		PhysicalMachine pm1 = ExercisesBase.getNewPhysicalMachine();
+		PhysicalMachine pm2 = ExercisesBase.getNewPhysicalMachine();
+		VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm1.localDisk.getMaxStorageCapacity() / 5);
+		if (!pm1.isRunning()) {
+			pm1.localDisk.registerObject(va);
+			
+			pm1.turnon();
+			Timed.simulateUntilLastEvent();
 		
+		
+			vms = requestVMs(pm1, smallConstraints, null, 1);
+			Timed.simulateUntilLastEvent();
+		}
+		
+		if (!pm2.isRunning()) {
+			pm2.localDisk.registerObject(va);
+			
+			pm2.turnon();
+			Timed.simulateUntilLastEvent();
+		}
+		
+		ResourceAllocation resourceAllocation2 = pm2.allocateResources(smallConstraints, true,
+				PhysicalMachine.defaultAllocLen);
+		pm1.migrateVM(vms[0], pm2);
+		Timed.simulateUntilLastEvent();
 	}
 
 }
