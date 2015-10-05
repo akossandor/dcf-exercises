@@ -1,9 +1,12 @@
 package hu.unimiskolc.iit.distsys;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -145,4 +148,31 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 		Timed.simulateUntilLastEvent();
 	}
 
+	public void feladat01() throws Exception {
+		int countOfPMS = 10;
+		IaaSService iaasService = ExercisesBase.getNewIaaSService();
+		ArrayList<PhysicalMachine> pms = new ArrayList<PhysicalMachine>();
+		
+		for (int i = 0; i < countOfPMS; i++) {
+			PhysicalMachine pm = ExercisesBase.getNewPhysicalMachine();
+			pms.add(pm);
+			
+			VirtualAppliance va = new VirtualAppliance("asd" + i, 777, 0, false, pm.localDisk.getMaxStorageCapacity() / 12);
+			if (!pm.isRunning()) {
+				pm.localDisk.registerObject(va);
+				
+				pm.turnon();
+				Timed.simulateUntilLastEvent();
+			}
+			
+			iaasService.registerHost(pm);
+			iaasService.registerRepository(pm.localDisk);
+			
+			for (int j = 0; j < 10; j++) {
+				iaasService.requestVM((VirtualAppliance) iaasService.repositories.get(i).contents().iterator().next(),
+						iaasService.getCapacities(), iaasService.repositories.get(i), 1);
+				Timed.simulateUntilLastEvent();
+			}
+		}
+	}
 }

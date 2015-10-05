@@ -130,4 +130,16 @@ public class TestVMCreation {
 				stop.isAllocVMCalled() && !stop.isDeployVMCalled()
 						&& !stop.isReqVMCalled());
 	}
+
+	@Test()
+	public void feladat01Test() throws Exception {
+		int beforePMSize = ExercisesBase.pmforwarders.size();
+		int beforeIaaSSize = ExercisesBase.iaasforwarders.size();
+		vmc.feladat01();
+		int afterPMSize = ExercisesBase.pmforwarders.size();
+		int afterIaaSSize = ExercisesBase.iaasforwarders.size();
+		
+		int m = 7;
+		m = 8;
+	}
 }

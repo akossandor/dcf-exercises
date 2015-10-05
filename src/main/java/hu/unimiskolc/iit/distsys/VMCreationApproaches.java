@@ -31,4 +31,6 @@ public interface VMCreationApproaches {
 	public void indirectVMCreation() throws Exception;
 
 	public void migratedVMCreation() throws Exception;
+	
+	public void feladat01() throws Exception;
 }
