@@ -27,6 +27,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.VirtualMachine;
 import hu.unimiskolc.iit.distsys.forwarders.IaaSForwarder;
 import hu.unimiskolc.iit.distsys.forwarders.PMForwarder;
+import hu.unimiskolc.iit.distsys.interfaces.VMCreationApproaches;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class TestVMCreation {
 			InstantiationException, IllegalAccessException {
 		Timed.resetTimed();
 		ExercisesBase.reset();
-		vmc = VMCreatorFactory.createApproachesExercise();
+		vmc = TestCreatorFactory.createApproachesExercise();
 	}
 
 	@Test()
@@ -135,7 +136,7 @@ public class TestVMCreation {
 	public void feladat01Test() throws Exception {
 		int beforePMSize = ExercisesBase.pmforwarders.size();
 		int beforeIaaSSize = ExercisesBase.iaasforwarders.size();
-		vmc.feladat01();
+		//vmc.();
 		int afterPMSize = ExercisesBase.pmforwarders.size();
 		int afterIaaSSize = ExercisesBase.iaasforwarders.size();
 		

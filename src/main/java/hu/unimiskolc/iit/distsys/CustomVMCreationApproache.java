@@ -25,6 +25,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.StorageObject;
 import hu.mta.sztaki.lpds.cloud.simulator.io.VirtualAppliance;
 import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode.NetworkException;
 import hu.unimiskolc.iit.distsys.forwarders.IaaSForwarder;
+import hu.unimiskolc.iit.distsys.interfaces.VMCreationApproaches;
 
 public class CustomVMCreationApproache extends ExercisesBase implements VMCreationApproaches {
 	public static final long aSecond = 1000; // in ms
