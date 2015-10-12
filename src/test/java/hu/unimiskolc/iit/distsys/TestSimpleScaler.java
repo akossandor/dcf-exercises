@@ -107,6 +107,8 @@ public class TestSimpleScaler {
 		new MyTimed();
 		// Runtime checks prepared
 
+		System.setProperty("hu.unimiskolc.iit.distsys.RRJSched", "hu.unimiskolc.iit.distsys.CustomRRJSched");
+		
 		// Preparing the scheduling
 		new JobtoVMScheduler(myIaaS, jobs);
 
@@ -115,7 +117,7 @@ public class TestSimpleScaler {
 			// Basic tests:
 			Assert.assertTrue("All jobs should start but " + j + " did not",
 					j.getRealqueueTime() >= 0);
-			Assert.assertTrue("All jobs should be complete but " + j
+			Assert.assertTrue( "All jobs should be complete but " + j
 					+ " did not", j.getRealstopTime() >= 0);
 
 			// More complex tests:
