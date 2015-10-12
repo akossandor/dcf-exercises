@@ -41,13 +41,33 @@ public class CustomRRJSched implements BasicJobScheduler {
 
 	@Override
 	public void handleJobRequestArrival(Job j) {
+		
+		ComplexDCFJob complexDCFJob = (ComplexDCFJob)j;
+		Repository r = iaas.repositories.get(0);
+		VirtualAppliance va = (VirtualAppliance) r.contents().iterator().next();
+		
+		double asd = j.getExectimeSecs() * ExercisesBase.maxProcessingCap;// * 1000;
+		double a = j.getExectimeSecs();
+		double b = j.getQueuetimeSecs();
+		double c = j.getStoptimeSecs();
+		
+		double aa = j.getRealqueueTime();
+		double bb = j.getRealstopTime();
+		double cc = j.getStartTimeInstance();
+		
+		double szam = j.nprocs * ExercisesBase.maxProcessingCap / (1.5 * j.nprocs);
+		ConstantConstraints constantConstraints;
+		//ConstantConstraints constantConstraints = new ConstantConstraints(j.nprocs + 1, szam, 1024l * 1024 * 1024);
+		if (j.nprocs < ExercisesBase.maxCoreCount) {
+			constantConstraints = new ConstantConstraints(j.nprocs + 1, szam, 1024l * 1024 * 1024);
+		}
+		else {
+			constantConstraints = new ConstantConstraints(j.nprocs, szam + 1024, 1024l * 1024 * 1024);
+		}
+		
+		//iaas.listVMs().iterator().next().underProcessing.size()
+		
 		try {
-			ComplexDCFJob complexDCFJob = (ComplexDCFJob)j;
-			Repository r = iaas.repositories.get(0);
-			VirtualAppliance va = (VirtualAppliance) r.contents().iterator().next();
-			
-			ConstantConstraints constantConstraints = new ConstantConstraints(j.nprocs + 10, 80, 1024l * 1024);
-			
 			VirtualMachine vm = iaas.requestVM(va, constantConstraints, r, 1)[0];
 			
 			StateChange vmStateChange = new VMStateChange(complexDCFJob);
@@ -70,8 +90,9 @@ class VMStateChange implements StateChange {
 	public void stateChanged(VirtualMachine vm, State oldState, State newState) {
 		if (newState == State.RUNNING) {
 			try {
-				ConsumptionEvent customConsumptionEvent = new CustomConsumptionEvent();
-				this.complexDCFJob.startNowOnVM(vm, customConsumptionEvent);
+				CustomConsumptionEvent customConsumptionEvent = new CustomConsumptionEvent(vm);
+				//ConsumptionEvent customConsumptionEvent = new CustomConsumptionEvent(vm);
+				this.complexDCFJob.startNowOnVM(vm, (ConsumptionEvent)customConsumptionEvent);
 				
 			} catch (Exception e) {
 				int m = 7;

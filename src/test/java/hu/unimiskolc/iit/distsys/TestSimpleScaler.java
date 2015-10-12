@@ -123,8 +123,8 @@ public class TestSimpleScaler {
 			// More complex tests:
 			// Should not allow too slow execution time
 			Assert.assertTrue(
-					"Every job should run faster or equal than it was originally expected but "
-							+ j + " did so",
+					"Every job should run faster or equal than it was originally expected but '"
+							+ j + "' did so" + "\nExectime: " + j.getExectimeSecs() * 1.5 + "; real: " + (j.getRealstopTime()- j.getRealqueueTime()),
 					j.getExectimeSecs() * 1.5 > j.getRealstopTime()
 							- j.getRealqueueTime());
 			// Should not allow too long queueing time
@@ -151,7 +151,7 @@ public class TestSimpleScaler {
 				"Should not have any VMs that are actually running for more than a few seconds without a job",
 				0, ComplexDCFJob.getFailingVMCounter());
 		Assert.assertTrue(
-				"Should have at least a few VMs that are reused for another job",
+				"Should have at least a few VMs that are reused for another job real value: '" + ComplexDCFJob.getVmReuseCount() + "'",
 				25 < ComplexDCFJob.getVmReuseCount());
 	}
 }
