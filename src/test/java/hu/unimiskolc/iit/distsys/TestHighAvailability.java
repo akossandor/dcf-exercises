@@ -42,13 +42,20 @@ import java.util.List;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestHighAvailability {
 	public static final double[] availabilityLevels = { 0.98, 0.99, 0.999};
 	public static final double pmAvailability = 0.65;
+	
+	@Before
+	public void init() throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException {
+		System.setProperty("hu.unimiskolc.iit.distsys.RRJSched", "hu.unimiskolc.iit.distsys.CustomRRJSched");
+	}
 
-	@Test(timeout = 180000)
+	@Test()
 	public void hatest() throws Exception {
 		int[] successCounters = new int[availabilityLevels.length];
 		int[] totalCounters = new int[availabilityLevels.length];
@@ -77,7 +84,7 @@ public class TestHighAvailability {
 		// Preparing the jobs for the VMs
 		RepetitiveRandomTraceGenerator rrtg = new RepetitiveRandomTraceGenerator(ComplexDCFJob.class);
 		// total number of jobs
-		rrtg.setJobNum(1000);
+		rrtg.setJobNum(300);
 		// joblist properties
 		rrtg.setExecmin(10);
 		rrtg.setExecmax(3600);
@@ -100,7 +107,7 @@ public class TestHighAvailability {
 		// Prepares the faulty PMs
 		class MyTimed extends Timed {
 			public MyTimed() {
-				subscribe(300000);
+				subscribe(600000);
 			}
 
 			class VMHandler implements VirtualMachine.StateChange {

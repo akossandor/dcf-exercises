@@ -41,23 +41,19 @@ public class CustomRRJSched implements BasicJobScheduler {
 
 	@Override
 	public void handleJobRequestArrival(Job j) {
+		ASD.handleJobRequestArrival(j, this.iaas);
+	}
+}
+
+class ASD {
+	public static void handleJobRequestArrival(Job j, IaaSService iaas) {
 		
 		ComplexDCFJob complexDCFJob = (ComplexDCFJob)j;
 		Repository r = iaas.repositories.get(0);
 		VirtualAppliance va = (VirtualAppliance) r.contents().iterator().next();
 		
-		double asd = j.getExectimeSecs() * ExercisesBase.maxProcessingCap;// * 1000;
-		double a = j.getExectimeSecs();
-		double b = j.getQueuetimeSecs();
-		double c = j.getStoptimeSecs();
-		
-		double aa = j.getRealqueueTime();
-		double bb = j.getRealstopTime();
-		double cc = j.getStartTimeInstance();
-		
 		double szam = j.nprocs * ExercisesBase.maxProcessingCap / (1.5 * j.nprocs);
 		ConstantConstraints constantConstraints;
-		//ConstantConstraints constantConstraints = new ConstantConstraints(j.nprocs + 1, szam, 1024l * 1024 * 1024);
 		if (j.nprocs < ExercisesBase.maxCoreCount) {
 			constantConstraints = new ConstantConstraints(j.nprocs + 1, szam, 1024l * 1024 * 1024);
 		}
@@ -70,7 +66,7 @@ public class CustomRRJSched implements BasicJobScheduler {
 		try {
 			VirtualMachine vm = iaas.requestVM(va, constantConstraints, r, 1)[0];
 			
-			StateChange vmStateChange = new VMStateChange(complexDCFJob);
+			StateChange vmStateChange = new VMStateChange(complexDCFJob, iaas);
 			vm.subscribeStateChange(vmStateChange);
 		} catch (Exception e) {
 			int m = 7;
@@ -81,9 +77,11 @@ public class CustomRRJSched implements BasicJobScheduler {
 
 class VMStateChange implements StateChange {
 	private ComplexDCFJob complexDCFJob;
+	private IaaSService iaas;
 	
-	public VMStateChange(ComplexDCFJob complexDCFJob) {
+	public VMStateChange(ComplexDCFJob complexDCFJob, IaaSService iaas) {
 		this.complexDCFJob = complexDCFJob;
+		this.iaas = iaas;
 	}
 	
 	@Override
@@ -98,7 +96,17 @@ class VMStateChange implements StateChange {
 				int m = 7;
 				m = 8;
 			}
-		} 
+		}
+		else if (newState == State.DESTROYED) {
+			//successfull
+			if (this.complexDCFJob.getRealstopTime() >= 0) {
+				int m = 7;
+				m = 8;
+			}
+			else {
+				//ASD.handleJobRequestArrival(this.complexDCFJob, this.iaas);
+			}
+		}
 	}
 	
 }
