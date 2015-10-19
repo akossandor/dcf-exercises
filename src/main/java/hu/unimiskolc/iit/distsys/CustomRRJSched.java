@@ -104,7 +104,7 @@ class VMStateChange implements StateChange {
 				m = 8;
 			}
 			else {
-				//ASD.handleJobRequestArrival(this.complexDCFJob, this.iaas);
+				ASD.handleJobRequestArrival(this.complexDCFJob, this.iaas);
 			}
 		}
 	}

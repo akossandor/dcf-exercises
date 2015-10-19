@@ -28,5 +28,6 @@ public class CustomConsumptionEvent implements ConsumptionEvent {
 		int m = 7;
 		m = 8;
 	}
-
+	
+	
 }
