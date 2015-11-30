@@ -125,6 +125,7 @@ public class TestPricing implements MultiCloudUser.CompletionCallback {
 	@Before
 	public void preparePricing() throws Exception {
 		System.setProperty("hu.unimiskolc.iit.distsys.CustomCloudProvider", "hu.unimiskolc.iit.distsys.CustomCloudProvider7");
+		
 		ourService = ExercisesBase.getNewIaaSService();
 		do {
 			theCompetition = ExercisesBase.getNewIaaSService();
@@ -154,7 +155,7 @@ public class TestPricing implements MultiCloudUser.CompletionCallback {
 		}
 	}
 
-	@Test(timeout = 60000)
+	@Test//(timeout = 60000)
 	public void thePricingTest() throws Exception {
 		Timed.simulateUntilLastEvent();
 		Assert.assertTrue(
