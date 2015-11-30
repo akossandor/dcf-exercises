@@ -25,9 +25,11 @@ package hu.unimiskolc.iit.distsys;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
@@ -47,8 +49,14 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.VirtualAppliance;
 public class TestHighAvailability {
 	public static final double[] availabilityLevels = { 0.75, 0.9, 0.95, 0.99 };
 	public static final double pmAvailability = 0.975;
+	
+	@Before
+	public void asd(){
+		System.setProperty("hu.unimiskolc.iit.distsys.RRJSched", "hu.unimiskolc.iit.distsys.CustomHA");
+		
+	}
 
-	@Test(timeout = 30000)
+	@Test()//timeout = 30000)
 	public void hatest() throws Exception {
 		int[] successCounters = new int[availabilityLevels.length];
 		int[] totalCounters = new int[availabilityLevels.length];
