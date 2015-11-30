@@ -66,8 +66,8 @@ public class CustomHA implements BasicJobScheduler {
 	}
 	
 	private int getVmCount(double avaibilityLevel){
-		for (int i = 0; i < TestHighAvailability.availabilityLevels.length; i++) {
-			if (TestHighAvailability.availabilityLevels[i] == avaibilityLevel) {
+		for (int i = 0; i < Constants.availabilityLevels.length; i++) {
+			if (Constants.availabilityLevels[i] == avaibilityLevel) {
 				return parallelVMsForAvaibilityLevels[i]; 
 			}
 		}
