@@ -39,6 +39,8 @@ public class TestVMCreation {
 	@Before
 	public void initVMC() throws ClassNotFoundException,
 			InstantiationException, IllegalAccessException {
+		
+		System.setProperty("hu.unimiskolc.iit.distsys.VMC", "hu.unimiskolc.iit.distsys.CustomVMCreationApproache");
 		Timed.resetTimed();
 		ExercisesBase.reset();
 		vmc = TestCreatorFactory.createApproachesExercise();

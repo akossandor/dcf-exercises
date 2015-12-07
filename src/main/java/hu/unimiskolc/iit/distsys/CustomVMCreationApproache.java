@@ -57,7 +57,7 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 	public void directVMCreation() throws Exception {
 		PhysicalMachine pm = ExercisesBase.getNewPhysicalMachine();
 		if (!pm.isRunning()) {
-			VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm.localDisk.getMaxStorageCapacity() / 5);
+			VirtualAppliance va = new VirtualAppliance("asd", 777, 0);
 			pm.localDisk.registerObject(va);
 			
 			pm.turnon();
@@ -73,7 +73,7 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 	public void twoPhaseVMCreation() throws Exception {
 		PhysicalMachine pm = ExercisesBase.getNewPhysicalMachine();
 		if (!pm.isRunning()) {
-			VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm.localDisk.getMaxStorageCapacity() / 5);
+			VirtualAppliance va = new VirtualAppliance("asd", 777, 0);
 			pm.localDisk.registerObject(va);
 			
 			pm.turnon();
@@ -103,7 +103,7 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 	public void indirectVMCreation() throws Exception {
 		IaaSService iaasService = ExercisesBase.getNewIaaSService();
 		PhysicalMachine pm = ExercisesBase.getNewPhysicalMachine();
-		VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm.localDisk.getMaxStorageCapacity() / 5);
+		VirtualAppliance va = new VirtualAppliance("asd", 777, 0);
 		if (!pm.isRunning()) {
 			pm.localDisk.registerObject(va);
 			
@@ -124,7 +124,7 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 		VirtualMachine[] vms = null;
 		PhysicalMachine pm1 = ExercisesBase.getNewPhysicalMachine();
 		PhysicalMachine pm2 = ExercisesBase.getNewPhysicalMachine();
-		VirtualAppliance va = new VirtualAppliance("asd", 777, 0, false, pm1.localDisk.getMaxStorageCapacity() / 5);
+		VirtualAppliance va = new VirtualAppliance("asd", 777, 0);
 		if (!pm1.isRunning()) {
 			pm1.localDisk.registerObject(va);
 			
@@ -143,8 +143,6 @@ public class CustomVMCreationApproache extends ExercisesBase implements VMCreati
 			Timed.simulateUntilLastEvent();
 		}
 		
-		ResourceAllocation resourceAllocation2 = pm2.allocateResources(smallConstraints, true,
-				PhysicalMachine.defaultAllocLen);
 		pm1.migrateVM(vms[0], pm2);
 		Timed.simulateUntilLastEvent();
 	}
