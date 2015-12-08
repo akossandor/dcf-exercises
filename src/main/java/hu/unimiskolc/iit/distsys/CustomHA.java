@@ -2,6 +2,7 @@ package hu.unimiskolc.iit.distsys;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.IaaSService;
@@ -24,6 +25,7 @@ public class CustomHA implements BasicJobScheduler {
 	public VirtualAppliance va;
 	public ArrayList<VirtualMachine> vms = new ArrayList<VirtualMachine>();
 	public ArrayList<CustomConsumotionEventHA> events = new ArrayList<CustomConsumotionEventHA>();
+	public static HashMap<ComplexDCFJob, ArrayList<VirtualMachine>> jobAndItsVMs = new HashMap<ComplexDCFJob, ArrayList<VirtualMachine>>();
 	
 	@Override
 	public void setupVMset(Collection<VirtualMachine> vms) {
@@ -44,21 +46,22 @@ public class CustomHA implements BasicJobScheduler {
 		double avaibilityLevel = job.getAvailabilityLevel();
 		
 		int necessaryVM = this.getVmCount(job.getAvailabilityLevel());
+		ArrayList<VirtualMachine> createdVMs = new ArrayList<VirtualMachine>();
 		
 		for (int i = 0; i < necessaryVM; i++) {			
 			ConstantConstraints cc = new ConstantConstraints(j.nprocs, ExercisesBase.minProcessingCap, ExercisesBase.minMem / j.nprocs);
 			try {
 				VirtualMachine vm = this.iaas.requestVM(this.va, cc, this.repository, 1)[0];
-				vm.subscribeStateChange(new CustomVMStateChangeHA(this));
-				vms.add(vm);
-				CustomConsumotionEventHA event = new CustomConsumotionEventHA(job);
-				events.add(event);
+				vm.subscribeStateChange(new CustomVMStateChangeHA(job));
+				createdVMs.add(vm);
 				
 			} catch (Exception e) {
 				int m = 7;
 				e.printStackTrace();
 			}
 		}
+		
+		jobAndItsVMs.put(job, createdVMs);
 		
 		int m = 7;
 		m = 8;

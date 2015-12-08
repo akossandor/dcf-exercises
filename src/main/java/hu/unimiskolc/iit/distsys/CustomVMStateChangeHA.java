@@ -10,20 +10,16 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption
 
 public class CustomVMStateChangeHA implements StateChange {
 
-	private CustomHA customHA;
-	public CustomVMStateChangeHA(CustomHA customHA) {
-		this.customHA = customHA;
+	private ComplexDCFJob job;
+	public CustomVMStateChangeHA(ComplexDCFJob job) {
+		this.job = job;
 	}
 	
 	public void stateChanged(VirtualMachine vm, State oldState, State newState) {
 		if (newState == State.RUNNING) {
 			try {
-				int index = this.customHA.vms.indexOf(vm);
-				
-				ComplexDCFJob complexDCFJob = (ComplexDCFJob) this.customHA.events.get(index).job;
-				
-				CustomConsumptionEvent customConsumptionEvent = new CustomConsumptionEvent(vm, complexDCFJob);
-				complexDCFJob.startNowOnVM(vm, (ConsumptionEvent)customConsumptionEvent);
+				CustomConsumotionEventHA customConsumptionEvent = new CustomConsumotionEventHA(this.job);
+				this.job.startNowOnVM(vm, (ConsumptionEvent)customConsumptionEvent);
 				
 			} catch (Exception e) {
 				int m = 7;
