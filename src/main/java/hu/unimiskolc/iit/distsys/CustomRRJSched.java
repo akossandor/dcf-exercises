@@ -2,6 +2,7 @@ package hu.unimiskolc.iit.distsys;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
@@ -21,11 +22,14 @@ import hu.unimiskolc.iit.distsys.interfaces.BasicJobScheduler;
 
 public class CustomRRJSched implements BasicJobScheduler {
 	
-	private ArrayList<VirtualMachine> vms;
+	public static ArrayList<VirtualMachine> vms = new ArrayList<VirtualMachine>();
+	public static ArrayList<ComplexDCFJob> jobs = new ArrayList<ComplexDCFJob>();
+	public static ArrayList<Boolean> jobsCompleted = new ArrayList<Boolean>();
+	public static HashMap<VirtualMachine, ComplexDCFJob> vmAndJobs = new HashMap<VirtualMachine, ComplexDCFJob>();
 	private IaaSService iaas;
 	
 	public CustomRRJSched() {
-		this.vms = new ArrayList<VirtualMachine>();
+		
 	}
 	
 	@Override
@@ -46,6 +50,7 @@ public class CustomRRJSched implements BasicJobScheduler {
 }
 
 class ASD {
+	
 	public static void handleJobRequestArrival(Job j, IaaSService iaas) {
 		
 		ComplexDCFJob complexDCFJob = (ComplexDCFJob)j;
@@ -64,10 +69,28 @@ class ASD {
 		//iaas.listVMs().iterator().next().underProcessing.size()
 		
 		try {
-			VirtualMachine vm = iaas.requestVM(va, constantConstraints, r, 1)[0];
+			VirtualMachine vm = null;
 			
+			for (int i = 0; i < CustomRRJSched.vmAndJobs.size(); i++) {
+				if (CustomRRJSched.jobsCompleted.get(i).booleanValue() &&
+						CustomRRJSched.vms.get(i).getResourceAllocation().allocated.compareTo(constantConstraints) == -1 &&
+						CustomRRJSched.vms.get(i).getState() == VirtualMachine.State.RUNNING) {
+					vm = CustomRRJSched.vms.get(i);
+					StateChange vmStateChange = new VMStateChange(complexDCFJob, iaas);
+					vm.subscribeStateChange(vmStateChange);
+					CustomConsumptionEvent customConsumptionEvent = new CustomConsumptionEvent(vm, complexDCFJob);
+					complexDCFJob.startNowOnVM(vm, customConsumptionEvent);
+					return;
+				}
+			}
+			
+			vm = iaas.requestVM(va, constantConstraints, r, 1)[0];
 			StateChange vmStateChange = new VMStateChange(complexDCFJob, iaas);
 			vm.subscribeStateChange(vmStateChange);
+			CustomRRJSched.vms.add(vm);
+			CustomRRJSched.vmAndJobs.put(vm, complexDCFJob);
+			CustomRRJSched.jobs.add(complexDCFJob);
+			CustomRRJSched.jobsCompleted.add(Boolean.FALSE);
 		} catch (Exception e) {
 			int m = 7;
 			m = 8;
@@ -88,7 +111,7 @@ class VMStateChange implements StateChange {
 	public void stateChanged(VirtualMachine vm, State oldState, State newState) {
 		if (newState == State.RUNNING) {
 			try {
-				CustomConsumptionEvent customConsumptionEvent = new CustomConsumptionEvent(vm);
+				CustomConsumptionEvent customConsumptionEvent = new CustomConsumptionEvent(vm, complexDCFJob);
 				//ConsumptionEvent customConsumptionEvent = new CustomConsumptionEvent(vm);
 				this.complexDCFJob.startNowOnVM(vm, (ConsumptionEvent)customConsumptionEvent);
 				

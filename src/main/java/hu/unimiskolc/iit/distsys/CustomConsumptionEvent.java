@@ -8,15 +8,23 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption
 public class CustomConsumptionEvent implements ConsumptionEvent {
 
 	private VirtualMachine vm;
+	private ComplexDCFJob complexDCFJob;
 	
-	public CustomConsumptionEvent(VirtualMachine vm) {
+	public CustomConsumptionEvent(VirtualMachine vm, ComplexDCFJob complexDCFJob) {
 		this.vm = vm;
+		this.complexDCFJob = complexDCFJob;
 	}
 	
 	@Override
 	public void conComplete() {
 		try {
-			this.vm.destroy(true);
+			//this.vm.destroy(true);
+			for (int i = 0; i < CustomRRJSched.jobs.size(); i++) {
+				if (CustomRRJSched.jobs.get(i) == this.complexDCFJob) {
+				 	Boolean b = CustomRRJSched.jobsCompleted.get(i);
+				 	b = Boolean.TRUE;
+				}
+			}
 		} catch (Exception e) {
 			int m = 7;
 			m = 8;
