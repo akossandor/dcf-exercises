@@ -53,7 +53,6 @@ public class CustomHA implements BasicJobScheduler {
 				vms.add(vm);
 				CustomConsumotionEventHA event = new CustomConsumotionEventHA(job);
 				events.add(event);
-				job.startNowOnVM(vm, event);
 				
 			} catch (Exception e) {
 				int m = 7;
